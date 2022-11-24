@@ -208,6 +208,72 @@ class PrimeLooter:
         finally:
             tab.close()
 
+    def claim_notclaimable(self, url, publisher):
+
+        tab = self.context.new_page()
+        try:
+            with tab.expect_response(
+                lambda response: "https://gaming.amazon.com/graphql" in response.url
+                and "item" in response.json()["data"]
+            ) as response_info:
+                log.debug("get game title")
+                tab.goto(url)
+                game_name = response_info.value.json()["data"]["item"]["game"]["assets"]["title"]
+                game_claimed = response_info.value.json()["data"]["item"]["offers"][0]["offerSelfConnection"]["eligibility"]["isClaimed"]
+
+            log.debug(f"{game_name} claimed: {game_claimed}")
+            if game_claimed:
+                log.debug(f"{game_name} from {publisher} already claimed")
+            else:
+                log.debug(f"Try to claim {game_name} from {publisher}")
+                tab.wait_for_selector("button[data-a-target=buy-box_call-to-action]")
+
+                loot_name = tab.query_selector("div[data-a-target=buy-box_item-title]").query_selector("h2").text_content()
+                log.debug(f"Try to claim loot {loot_name} from {game_name} by {publisher}")
+
+                claim_button = tab.query_selector("button[data-a-target=buy-box_call-to-action]")
+                if not claim_button:
+                    log.warning(f"Could not claim {loot_name} from {game_name} by {publisher} (in-game loot)")
+
+                claim_button.click()
+
+                link_modal = tab.query_selector("div[data-a-target=LinkAccountModal]")
+
+                if link_modal:
+                    log.warning(f"Could not claim {loot_name} from {game_name} by {publisher} (account not connected)")
+                else:
+                    tab.wait_for_selector("div[data-a-target=thank-you_header-image]")
+                    
+                    if PrimeLooter.exists(tab, "div.item-thank-you"):
+                        log.info(f"Claimed {loot_name} ({game_name})")
+
+                        if PrimeLooter.exists(tab, "div.claim-summary-copyable-item"):
+                            try:
+                                code = (
+                                    tab.query_selector(
+                                        'div[data-a-target="copy-code-input"] input'
+                                    )
+                                    .get_attribute("value")
+                                    .strip()
+                                )
+                                instructions = (
+                                    tab.query_selector("div[data-a-target=claim-instructions_text]").inner_text().strip()
+                                )
+                                PrimeLooter.code_to_file(game_name, code, instructions)
+                            except Exception:
+                                log.warning(f"Could not get code for {loot_name} ({game_name}) from {publisher}")
+                    else:
+                        log.warning(f"Could not claim {loot_name} from {game_name} by {publisher} (unknown error)")
+        except Error as ex:
+            print(ex)
+            traceback.print_tb(ex.__traceback__)
+            log.error(
+                f"An error occured ({publisher}/{game_name})! Did they make some changes to the website? "
+                "Please report @github if this happens multiple times."
+            )
+        finally:
+            tab.close()
+
     def claim_direct(self):
         tab = self.context.new_page()
         try:
@@ -282,6 +348,9 @@ class PrimeLooter:
         msg = msg[:-1]
         msg += "\n"
         log.info(msg)
+
+        for offer in not_claimable_offers:
+            self.claim_notclaimable(offer["content"]["externalURL"], offer["content"]["publisher"])
 
         # list claimed offers
         msg = "The following offers have been claimed already:"
