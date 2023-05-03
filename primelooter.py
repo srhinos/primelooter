@@ -228,7 +228,7 @@ class PrimeLooter:
                 log.debug(f"Try to claim {game_name} from {publisher}")
                 tab.wait_for_selector("button[data-a-target=buy-box_call-to-action]")
 
-                loot_name = tab.query_selector("div[data-a-target=buy-box_item-title]").query_selector("h2").text_content()
+                loot_name = tab.query_selector("div[data-a-target=buy-box_title]").query_selector("h2").text_content()
                 log.debug(f"Try to claim loot {loot_name} from {game_name} by {publisher}")
 
                 claim_button = tab.query_selector("button[data-a-target=buy-box_call-to-action]")
