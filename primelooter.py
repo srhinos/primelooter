@@ -146,7 +146,7 @@ class PrimeLooter:
                 tab.goto(url)
                 game_name = response_info.value.json()["data"]["journey"]["assets"]["title"]
 
-            log.debug(f"Try to claim {game_name} from {publisher}")
+            log.debug(f"external: Try to claim {game_name} from {publisher}")
             tab.wait_for_selector("div[data-a-target=loot-card-available]")
 
             loot_cards = tab.query_selector_all("div[data-a-target=loot-card-available]")
@@ -227,9 +227,13 @@ class PrimeLooter:
             else:
                 log.debug(f"Try to claim {game_name} from {publisher}")
                 tab.wait_for_selector("button[data-a-target=buy-box_call-to-action]")
-
-                loot_name = tab.query_selector("div[data-a-target=buy-box_title]").query_selector("h2").text_content()
-                log.debug(f"Try to claim loot {loot_name} from {game_name} by {publisher}")
+                
+                try:
+                  loot_name = tab.query_selector("div[data-a-target=buy-box_title]").query_selector("h2").text_content()
+                except:
+                  loot_name = tab.query_selector("div[data-a-target=buy-box_title]").query_selector("h1").text_content()
+                  
+                log.debug(f"notclaimable: Try to claim loot {loot_name} from {game_name} by {publisher}")
 
                 claim_button = tab.query_selector("button[data-a-target=buy-box_call-to-action]")
                 if not claim_button:
@@ -285,12 +289,13 @@ class PrimeLooter:
                 "> div[class='offer-list__content__grid'] "
                 "> div[class='tw-block']"
             )
-            fgwp_selector = "button[data-a-target='FGWPOffer']"
+            fgwp_selector = "button[data-a-target='ExternalOfferClaim']"
 
             direct_offers = []
             offer_query = tab.query_selector_all(offer_selector)
 
             for offer in offer_query:
+                log.debug(offer)
                 if offer.query_selector(fgwp_selector):
                     direct_offers.append(offer)
 
