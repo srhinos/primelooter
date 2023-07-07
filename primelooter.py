@@ -210,10 +210,9 @@ class PrimeLooter:
 
     def claim_notclaimable(self, url, publisher):
 
-        if "loot" not in url:
+        if "https://gaming.amazon.com/home" in url:
             log.warning(
-                f"Skipping URL {url}, looks to not be a game URL"
-                "Please report @github if this appears to be a mistake!"
+                f"Skipping bad URL {url}"
             )
             return
 
