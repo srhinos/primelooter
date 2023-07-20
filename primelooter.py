@@ -295,7 +295,7 @@ class PrimeLooter:
                 "> div[class='offer-list__content__grid'] "
                 "> div[class='tw-block']"
             )
-            fgwp_selector = "button[data-a-target='ExternalOfferClaim']"
+            fgwp_selector = "button[data-a-target='FGWPOffer']"
 
             direct_offers = []
             offer_query = tab.query_selector_all(offer_selector)
