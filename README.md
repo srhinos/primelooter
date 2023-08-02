@@ -26,7 +26,7 @@ Python bot which automatically claims ~~twitch~~ amazon prime gaming loot :D
 
 ### 2. 🍪 Generate a cookie.txt
 
-1.  Install this addon: [cookie.txt](https://addons.mozilla.org/de/firefox/addon/cookies-txt/) (Firefox) / [cookie.txt]([https://addons.mozilla.org/de/firefox/addon/cookies-txt](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)/) (Chrome)
+1.  Install this addon: [cookie.txt](https://addons.mozilla.org/de/firefox/addon/cookies-txt/) (Firefox) / [cookie.txt](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc) (Chrome)
 2.  Goto: [https://gaming.amazon.com](https://gaming.amazon.com)
 3.  Login with your credentials
 4.  There should be a new add-on icon in the right corner. Click on it and Export Cookies->Current Site
