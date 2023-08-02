@@ -24,9 +24,9 @@ Python bot which automatically claims ~~twitch~~ amazon prime gaming loot :D
   If you want to use the provided docker image (only linux/amd64 plattform for now) you must mount the **config.txt** and **providers.txt** into the **app** path. (example compose file is provided)
 </details>
 
-### 2. 🍪 Generate a cookie.txt (Firefox)
+### 2. 🍪 Generate a cookie.txt
 
-1.  Install this addon: [cookie.txt](https://addons.mozilla.org/de/firefox/addon/cookies-txt/)
+1.  Install this addon: [cookie.txt](https://addons.mozilla.org/de/firefox/addon/cookies-txt/) (Firefox) / [cookie.txt]([https://addons.mozilla.org/de/firefox/addon/cookies-txt](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)/) (Chrome)
 2.  Goto: [https://gaming.amazon.com](https://gaming.amazon.com)
 3.  Login with your credentials
 4.  There should be a new add-on icon in the right corner. Click on it and Export Cookies->Current Site
