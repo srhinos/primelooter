@@ -54,9 +54,7 @@ def use_experimental_api(cookie_file):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Notification bot for the lower saxony vaccination portal"
-    )
+    parser = argparse.ArgumentParser(description="Notification bot for the lower saxony vaccination portal")
 
     parser.add_argument(
         "--legacy",

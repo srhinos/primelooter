@@ -17,20 +17,13 @@ offers_payload = {
 }
 
 
-async def claim_offer(
-    offer_id: str, item: dict, client: httpx.AsyncClient, headers: dict
-) -> True:
+async def claim_offer(offer_id: str, item: dict, client: httpx.AsyncClient, headers: dict) -> True:
     if item["offers"][0]["offerSelfConnection"]["eligibility"]["isClaimed"] != True:
         if (
             item["offers"][0]["offerSelfConnection"]["eligibility"]["canClaim"] == False
-            and item["offers"][0]["offerSelfConnection"]["eligibility"][
-                "missingRequiredAccountLink"
-            ]
-            == True
+            and item["offers"][0]["offerSelfConnection"]["eligibility"]["missingRequiredAccountLink"] == True
         ):
-            log.error(
-                f"Cannot collect game `{item['game']['assets']['title']}`, account link required."
-            )
+            log.error(f"Cannot collect game `{item['game']['assets']['title']}`, account link required.")
             return
         log.info(f"Collecting offer for {item['game']['assets']['title']}")
         claim_payload = {
@@ -38,18 +31,14 @@ async def claim_offer(
             "variables": {
                 "input": {
                     "offerIds": [offer_id],
-                    "attributionChannel": '{"eventId":"ItemDetailRootPage:'
-                    + offer_id
-                    + '","page":"ItemDetailPage"}',
+                    "attributionChannel": '{"eventId":"ItemDetailRootPage:' + offer_id + '","page":"ItemDetailPage"}',
                 }
             },
             "extensions": {},
             "query": "fragment Place_Orders_Payload_Order_Information on OfferOrderInformation {\n  catalogOfferId\n  claimCode\n  entitledAccountId\n  entitledAccountName\n  id\n  orderDate\n  orderState\n  __typename\n}\n\nmutation placeOrdersDetailPage($input: PlaceOrdersInput!) {\n  placeOrders(input: $input) {\n    error {\n      code\n      __typename\n    }\n    orderInformation {\n      ...Place_Orders_Payload_Order_Information\n      __typename\n    }\n    __typename\n  }\n}\n",
         }
 
-        response = await client.post(
-            gql_url, headers=headers, data=json.dumps(claim_payload)
-        )
+        response = await client.post(gql_url, headers=headers, data=json.dumps(claim_payload))
         if response.json()["data"]["placeOrders"]["error"] != None:
             log.error(f"Error: {response.json()['data']['placeOrders']['error']}")
 
@@ -68,20 +57,13 @@ async def primelooter(cookie_file):
         for _c in jar:
             client.cookies.jar.set_cookie(_c)
 
-        html_body = (
-            await client.get("https://gaming.amazon.com/home", headers=base_headers)
-        ).text
+        html_body = (await client.get("https://gaming.amazon.com/home", headers=base_headers)).text
         matches = re.findall(r"name='csrf-key' value='(.*)'", html_body)
         json_headers["csrf-token"] = matches[0]
 
-        response = await client.post(
-            gql_url, headers=json_headers, data=json.dumps(offers_payload)
-        )
+        response = await client.post(gql_url, headers=json_headers, data=json.dumps(offers_payload))
         data = response.json()["data"]["inGameLoot"]["items"]
 
         coros = await asyncio.gather(
-            *[
-                claim_offer(item["offers"][0]["id"], item, client, json_headers)
-                for item in data
-            ]
+            *[claim_offer(item["offers"][0]["id"], item, client, json_headers) for item in data]
         )
