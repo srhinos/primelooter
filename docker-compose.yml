@@ -9,4 +9,4 @@ services:
       - ./publishers.txt:/app/publishers.txt # must exist before launching
       - ./game_codes.txt:/app/game_codes.txt # must exist before launching
     environment:
-      - TZ=Europe/Berlin
+      - TZ=America/New_York
