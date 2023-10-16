@@ -13,15 +13,15 @@ offers_payload = {
     "operationName": "OffersContext_Offers_And_Items",
     "variables": {"pageSize": 999},
     "extensions": {},
-    "query": "query OffersContext_Offers_And_Items($dateOverride: Time, $pageSize: Int) {\n  inGameLoot: items(\n    collectionType: LOOT\n    dateOverride: $dateOverride\n    pageSize: $pageSize\n  ) {\n    items {\n      ...Item\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment Item on Item {\n  id\n  isDirectEntitlement\n  requiresLinkBeforeClaim\n  grantsCode\n  isDeepLink\n  isFGWP\n  offers {\n    ...Item_Offer\n    __typename\n  }\n  game {\n    ...Game\n    __typename\n  }\n  __typename\n}\n\n\nfragment Item_Offer on Offer {\n  id\n  offerSelfConnection {\n    eligibility {\n      ...Item_Offer_Eligibility\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment Item_Offer_Eligibility on OfferEligibility {\n  isClaimed\n  canClaim\n  missingRequiredAccountLink\n}\n\nfragment Game on GameV2 {\n  id\n  assets {\n    title\n    publisher\n  }\n}\n",
+    "query": "query OffersContext_Offers_And_Items($dateOverride: Time, $pageSize: Int) {\n  inGameLoot: items(\n    collectionType: LOOT\n    dateOverride: $dateOverride\n    pageSize: $pageSize\n  ) {\n    items {\n      ...Item\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment Item on Item {\n  id\n  isDirectEntitlement\n  requiresLinkBeforeClaim\n  grantsCode\n  isDeepLink\n  isFGWP\n  offers {\n    ...Item_Offer\n    __typename\n  }\n  game {\n    ...Game\n    __typename\n  }\n  __typename\n}\n\n\nfragment Item_Offer on Offer {\n  id\n  offerSelfConnection {\n    eligibility {\n      ...Item_Offer_Eligibility\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment Item_Offer_Eligibility on OfferEligibility {\n  isClaimed\n  canClaim\n  missingRequiredAccountLink\n}\n\nfragment Game on GameV2 {\n  id\n  assets {\n    title\n    publisher\n  }\n}\n",  # noqa: E501 TODO: This needs to become a non \n formatted string somewhere, just not doing it now
 }
 
 
 async def claim_offer(offer_id: str, item: dict, client: httpx.AsyncClient, headers: dict) -> True:
-    if item["offers"][0]["offerSelfConnection"]["eligibility"]["isClaimed"] != True:
+    if not item["offers"][0]["offerSelfConnection"]["eligibility"]["isClaimed"]:
         if (
-            item["offers"][0]["offerSelfConnection"]["eligibility"]["canClaim"] == False
-            and item["offers"][0]["offerSelfConnection"]["eligibility"]["missingRequiredAccountLink"] == True
+            item["offers"][0]["offerSelfConnection"]["eligibility"]["canClaim"] is False
+            and item["offers"][0]["offerSelfConnection"]["eligibility"]["missingRequiredAccountLink"] is True
         ):
             log.error(f"Cannot collect game `{item['game']['assets']['title']}`, account link required.")
             return
@@ -35,11 +35,11 @@ async def claim_offer(offer_id: str, item: dict, client: httpx.AsyncClient, head
                 }
             },
             "extensions": {},
-            "query": "fragment Place_Orders_Payload_Order_Information on OfferOrderInformation {\n  catalogOfferId\n  claimCode\n  entitledAccountId\n  entitledAccountName\n  id\n  orderDate\n  orderState\n  __typename\n}\n\nmutation placeOrdersDetailPage($input: PlaceOrdersInput!) {\n  placeOrders(input: $input) {\n    error {\n      code\n      __typename\n    }\n    orderInformation {\n      ...Place_Orders_Payload_Order_Information\n      __typename\n    }\n    __typename\n  }\n}\n",
+            "query": "fragment Place_Orders_Payload_Order_Information on OfferOrderInformation {\n  catalogOfferId\n  claimCode\n  entitledAccountId\n  entitledAccountName\n  id\n  orderDate\n  orderState\n  __typename\n}\n\nmutation placeOrdersDetailPage($input: PlaceOrdersInput!) {\n  placeOrders(input: $input) {\n    error {\n      code\n      __typename\n    }\n    orderInformation {\n      ...Place_Orders_Payload_Order_Information\n      __typename\n    }\n    __typename\n  }\n}\n",  # noqa: E501 TODO: This needs to become a non \n formatted string somewhere, just not doing it now
         }
 
         response = await client.post(gql_url, headers=headers, data=json.dumps(claim_payload))
-        if response.json()["data"]["placeOrders"]["error"] != None:
+        if response.json()["data"]["placeOrders"]["error"] is not None:
             log.error(f"Error: {response.json()['data']['placeOrders']['error']}")
 
 
@@ -64,6 +64,8 @@ async def primelooter(cookie_file):
         response = await client.post(gql_url, headers=json_headers, data=json.dumps(offers_payload))
         data = response.json()["data"]["inGameLoot"]["items"]
 
-        coros = await asyncio.gather(
+        # although insanely low, python WILL garbage collect running coroutines if their references
+        # aren't stored somewhere, therefore we noqa the Flake8 issue yelling at us about it.
+        coros = await asyncio.gather(  # noqa: F841
             *[claim_offer(item["offers"][0]["id"], item, client, json_headers) for item in data]
         )
