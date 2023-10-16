@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.3.8](https://www.github.com/srhinos/primelooter/compare/v1.3.7...v1.3.8) (2023-10-16)
+
+
+### Bug Fixes
+
+* Format with Black ([567d2d9](https://www.github.com/srhinos/primelooter/commit/567d2d9810aa4e564882e180c6d6c4df7d88b2b9))
+* Refactor to Poise Experiemental Code to Take Over Legacy Playwright Code ([a925486](https://www.github.com/srhinos/primelooter/commit/a92548626c155834a9f2469d2224d48936d8717e))
+
 ### [1.3.7](https://www.github.com/srhinos/primelooter/compare/v1.3.6...v1.3.7) (2022-07-22)
 
 
