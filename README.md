@@ -1,7 +1,7 @@
 # Primelooter
 
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/srhinos/primelooter?label=version)
-[![Python](https://img.shields.io/badge/Made%20with-Python%203.9-blue.svg?style=flat-square&logo=Python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Made%20with-Python%203.11-blue.svg?style=flat-square&logo=Python&logoColor=white)](https://www.python.org/)
 [![GitHub license](https://img.shields.io/github/license/srhinos/primelooter)](https://github.com/srhinos/primelooter/blob/main/LICENSE)
 
 Python bot which automatically claims ~~twitch~~ amazon prime gaming loot :D
@@ -12,10 +12,9 @@ Python bot which automatically claims ~~twitch~~ amazon prime gaming loot :D
 <details>
   <summary><b>Local 📌</b></summary>
 
-  1.  Install python3
+  1.  Install python 3.11
   2.  Install package requirements: `pip install -r requirements.txt`
-  3.  Install playwright: `python -m playwright install`
-  4.  Create your own cookies.txt and publishers.txt (see example files)`
+  3.  Create your own cookies.txt and publishers.txt (see example files)`
 </details>
 
 <details>
